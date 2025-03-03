@@ -10,7 +10,7 @@ class Contact {
         this.email = this.validateEmail(email);
     }
 
-    // Validate First and Last Name (Capitalized & min 3 characters)
+    // Validate First and Last Name -(Capitalized & min 3 characters)
     validateName(name, field) {
         const nameRegex = /^[A-Z][a-zA-Z]{2,}$/;
         if (!nameRegex.test(name)) {
@@ -19,7 +19,7 @@ class Contact {
         return name;
     }
 
-    // Validate Address, City, and State (Min 4 characters)
+    // Validate Address, City, and State -(Min 4 characters)
     validateAddressField(value, field) {
         if (value.length < 4) {
             throw new Error(`${field} must have at least 4 characters`);
@@ -27,7 +27,7 @@ class Contact {
         return value;
     }
 
-    // Validate ZIP Code (6 digits)
+    // Validate ZIP Code -(6 digits)
     validateZip(zip) {
         const zipRegex = /^\d{6}$/;
         if (!zipRegex.test(zip)) {
@@ -36,7 +36,7 @@ class Contact {
         return zip;
     }
 
-    // Validate Phone Number (Format: xxx-xxx-xxxx)
+    // Validate Phone Number -(Format: xxx-xxx-xxxx)
     validatePhone(phone) {
         const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
         if (!phoneRegex.test(phone)) {
@@ -45,7 +45,7 @@ class Contact {
         return phone;
     }
 
-    // Validate Email (Basic Email Pattern)
+    // Validate Email -(Basic Email Pattern)
     validateEmail(email) {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
@@ -60,19 +60,21 @@ class Contact {
 }
 
 class AddressBook {
-    constructor() {
+    constructor(name) {
+        this.name = name;
         this.contacts = [];
     }
 
     addContact(contact) {
         this.contacts.push(contact);
-        console.log("Contact added successfully!");
+        console.log(`Contact added to ${this.name} successfully!`);
     }
 
     listContacts() {
         if (this.contacts.length === 0) {
-            console.log("No contacts available");
+            console.log(`No contacts available in ${this.name}.`);
         } else {
+            console.log(`Contacts in ${this.name}:`);
             this.contacts.forEach((contact, index) => {
                 console.log(`${index + 1}. ${contact.display()}`);
             });
@@ -80,14 +82,51 @@ class AddressBook {
     }
 }
 
-//Error Handling
-const addressBook = new AddressBook();
+class AddressBookManager {
+    constructor() {
+        this.addressBooks = [];
+    }
+
+    createAddressBook(name) {
+        const newAddressBook = new AddressBook(name);
+        this.addressBooks.push(newAddressBook);
+        console.log(`New Address Book '${name}' created successfully!`);
+    }
+
+    getAddressBook(name) {
+        return this.addressBooks.find(book => book.name === name);
+    }
+
+    listAddressBooks() {
+        if (this.addressBooks.length === 0) {
+            console.log("No Address Books available");
+        } else {
+            console.log("Available Address Books: ");
+            this.addressBooks.forEach((book, index) => {
+                console.log(`${index + 1}. ${book.name}`);
+            });
+        }
+    }
+}
+
+//Usage
+const manager = new AddressBookManager();
+manager.createAddressBook("Family");
+manager.createAddressBook("Work");
+
+const familyBook = manager.getAddressBook("Family");
+const workBook = manager.getAddressBook("Work");
 
 try {
-    const contact1 = new Contact("Rahul", "Sharma", "354 Street", "Indore", "MP", "34467", "123-456-7890", "rahulsh@example.com");
-    addressBook.addContact(contact1);
+    const contact1 = new Contact("Shub", "Rao", "123 Park Lane", "India", "ind", "10001", "123-456-7890", "raoshub@example.com");
+    familyBook.addContact(contact1);
+    
+    const contact2 = new Contact("Jack", "Smith", "456 Elm Street", "Los Angeles", "CA", "90001", "987-654-3210", "jacksmith@example.com");
+    workBook.addContact(contact2);
 } catch (error) {
     console.error("Error: ", error.message);
 }
 
-addressBook.listContacts();
+manager.listAddressBooks();
+familyBook.listContacts();
+workBook.listContacts();
