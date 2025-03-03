@@ -57,6 +57,16 @@ class Contact {
     display() {
         return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zip}, ${this.phone}, ${this.email}`;
     }
+
+    // Method to update contact details-
+    updateDetails(updatedDetails) {
+        Object.keys(updatedDetails).forEach(key => {
+            if (this[key] !== undefined) {
+                this[key] = updatedDetails[key];
+            }
+        });
+        console.log("Contact updated successfully!");
+    }
 }
 
 class AddressBook {
@@ -78,6 +88,21 @@ class AddressBook {
             this.contacts.forEach((contact, index) => {
                 console.log(`${index + 1}. ${contact.display()}`);
             });
+        }
+    }
+
+    // Find contact by name
+    findContact(firstName, lastName) {
+        return this.contacts.find(contact => contact.firstName === firstName && contact.lastName === lastName);
+    }
+
+    // Edit contact details
+    editContact(firstName, lastName, updatedDetails) {
+        const contact = this.findContact(firstName, lastName);
+        if (contact) {
+            contact.updateDetails(updatedDetails);
+        } else {
+            console.log(`Contact ${firstName} ${lastName} not found`);
         }
     }
 }
@@ -109,24 +134,23 @@ class AddressBookManager {
     }
 }
 
-//Usage
+// Usage
 const manager = new AddressBookManager();
-manager.createAddressBook("Family");
-manager.createAddressBook("Work");
+manager.createAddressBook("Friends");
+manager.createAddressBook("Office");
 
-const familyBook = manager.getAddressBook("Family");
-const workBook = manager.getAddressBook("Work");
+const friendsBook = manager.getAddressBook("Friends");
 
 try {
-    const contact1 = new Contact("Shub", "Rao", "123 Park Lane", "India", "ind", "10001", "123-456-7890", "raoshub@example.com");
-    familyBook.addContact(contact1);
-    
-    const contact2 = new Contact("Jack", "Smith", "456 Elm Street", "Los Angeles", "CA", "90001", "987-654-3210", "jacksmith@example.com");
-    workBook.addContact(contact2);
+    // Adding a contact
+    const contact1 = new Contact("Rahul", "Sharma", "123 Park Lane", "New York", "NY", "100001", "123-456-7890", "rahulsh@example.com");
+    friendsBook.addContact(contact1);
+
+    // Finding and editing the contact
+    friendsBook.editContact("Jack", "Smith", { city: "Los Angeles", phone: "987-654-3210" });
+
 } catch (error) {
     console.error("Error: ", error.message);
 }
 
-manager.listAddressBooks();
-familyBook.listContacts();
-workBook.listContacts();
+friendsBook.listContacts();
