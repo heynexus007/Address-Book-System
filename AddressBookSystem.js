@@ -13,14 +13,14 @@ class Contact {
     validateName(name, field) {
         const nameRegex = /^[A-Z][a-zA-Z]{2,}$/;
         if (!nameRegex.test(name)) {
-            throw new Error(`${field} must start with a capital letter and have at least 3 characters`);
+            throw new Error(`${field} must start with a capital letter and have at least 3 characters.`);
         }
         return name;
     }
 
     validateAddressField(value, field) {
         if (value.length < 4) {
-            throw new Error(`${field} must have at least 4 characters`);
+            throw new Error(`${field} must have at least 4 characters.`);
         }
         return value;
     }
@@ -28,7 +28,7 @@ class Contact {
     validateZip(zip) {
         const zipRegex = /^\d{6}$/;
         if (!zipRegex.test(zip)) {
-            throw new Error("Zip Code must be exactly 6 digits");
+            throw new Error("Zip Code must be exactly 6 digits.");
         }
         return zip;
     }
@@ -36,7 +36,7 @@ class Contact {
     validatePhone(phone) {
         const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
         if (!phoneRegex.test(phone)) {
-            throw new Error("Phone Number must be in format XXX-XXX-XXXX");
+            throw new Error("Phone Number must be in format XXX-XXX-XXXX.");
         }
         return phone;
     }
@@ -44,7 +44,7 @@ class Contact {
     validateEmail(email) {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
-            throw new Error("Invalid email format");
+            throw new Error("Invalid email format.");
         }
         return email;
     }
@@ -67,9 +67,9 @@ class AddressBook {
 
     listContacts() {
         if (this.contacts.length === 0) {
-            console.log(`No contacts available in ${this.name}`);
+            console.log(`No contacts available in ${this.name}.`);
         } else {
-            console.log(`Contacts in ${this.name}: `);
+            console.log(`Contacts in ${this.name}:`);
             this.contacts.forEach((contact, index) => {
                 console.log(`${index + 1}. ${contact.display()}`);
             });
@@ -90,11 +90,10 @@ class AddressBook {
             });
             console.log(`Contact ${firstName} ${lastName} updated successfully!`);
         } else {
-            console.log(`Contact ${firstName} ${lastName} not found`);
+            console.log(`Contact ${firstName} ${lastName} not found.`);
         }
     }
 
-    // Delete a contact
     deleteContact(firstName, lastName) {
         const index = this.contacts.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
         if (index !== -1) {
@@ -103,6 +102,13 @@ class AddressBook {
         } else {
             console.log(`Contact ${firstName} ${lastName} not found.`);
         }
+    }
+
+    // Count contacts using reduce function
+    countContacts() {
+        const count = this.contacts.reduce(acc => acc + 1, 0);
+        console.log(`Total number of contacts in ${this.name}: ${count}`);
+        return count;
     }
 }
 
@@ -140,14 +146,21 @@ manager.createAddressBook("Friends");
 const friendsBook = manager.getAddressBook("Friends");
 
 try {
-    const contact1 = new Contact("Rahul", "Sharma", "123 Park Lane", "Indore", "Madhya", "100001", "123-456-7890", "rahulrao@example.com");
-    const contact2 = new Contact("Jack", "Smith", "456 Elm Street", "Bhopal", "Madhya", "900002", "987-654-3210", "jacksm@example.com");
+    const contact1 = new Contact("Rahul", "Sharma", "123 Park Lane", "Indore", "India", "100001", "123-456-7890", "rahulsharma@example.com");
+    const contact2 = new Contact("Jack", "Smith", "456 Elm Street", "Damoh", "India", "900002", "987-654-3210", "jacksm@example.com");
     
     friendsBook.addContact(contact1);
     friendsBook.addContact(contact2);
 
+    // Counting the contacts
+    friendsBook.countContacts();
+
     // Deleting a contact
     friendsBook.deleteContact("Rahul", "Sharma");
+
+    // Counting after deletion
+    friendsBook.countContacts();
+
 } catch (error) {
     console.error("Error: ", error.message);
 }
