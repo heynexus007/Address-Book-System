@@ -82,37 +82,29 @@ class AddressBook {
         }
     }
 
-    // View persons grouped by City
-    viewByCity() {
-        const cityGroups = this.contacts.reduce((acc, contact) => {
-            if (!acc[contact.city]) {
-                acc[contact.city] = [];
-            }
-            acc[contact.city].push(contact.display());
+    // Count persons by City
+    countByCity() {
+        const cityCount = this.contacts.reduce((acc, contact) => {
+            acc[contact.city] = (acc[contact.city] || 0) + 1;
             return acc;
         }, {});
 
-        console.log("\nPersons grouped by City:");
-        Object.entries(cityGroups).forEach(([city, people]) => {
-            console.log(`\nCity: ${city}`);
-            people.forEach(person => console.log(person));
+        console.log("\nNumber of Contacts by City:");
+        Object.entries(cityCount).forEach(([city, count]) => {
+            console.log(`${city}: ${count}`);
         });
     }
 
-    // View persons grouped by State
-    viewByState() {
-        const stateGroups = this.contacts.reduce((acc, contact) => {
-            if (!acc[contact.state]) {
-                acc[contact.state] = [];
-            }
-            acc[contact.state].push(contact.display());
+    // Count persons by State
+    countByState() {
+        const stateCount = this.contacts.reduce((acc, contact) => {
+            acc[contact.state] = (acc[contact.state] || 0) + 1;
             return acc;
         }, {});
 
-        console.log("\nPersons grouped by State:");
-        Object.entries(stateGroups).forEach(([state, people]) => {
-            console.log(`\nState: ${state}`);
-            people.forEach(person => console.log(person));
+        console.log("\nNumber of Contacts by State:");
+        Object.entries(stateCount).forEach(([state, count]) => {
+            console.log(`${state}: ${count}`);
         });
     }
 }
@@ -163,11 +155,11 @@ try {
     friendsBook.addContact(contact4);
     friendsBook.addContact(contact5);
 
-    // Viewing contacts by city
-    friendsBook.viewByCity();
+    // Counting contacts by city
+    friendsBook.countByCity();
 
-    // Viewing contacts by state
-    friendsBook.viewByState();
+    // Counting contacts by state
+    friendsBook.countByState();
 
 } catch (error) {
     console.error("Error:", error.message);
