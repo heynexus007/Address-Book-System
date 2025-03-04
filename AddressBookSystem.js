@@ -1,168 +1,148 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
 class Contact {
-    constructor(firstName, lastName, address, city, state, zip, phone, email) {
-        this.firstName = this.validateName(firstName, "First Name");
-        this.lastName = this.validateName(lastName, "Last Name");
-        this.address = this.validateAddressField(address, "Address");
-        this.city = this.validateAddressField(city, "City");
-        this.state = this.validateAddressField(state, "State");
-        this.zip = this.validateZip(zip);
-        this.phone = this.validatePhone(phone);
-        this.email = this.validateEmail(email);
+    private String firstName, lastName, address, city, state, zip, phone, email;
+
+    public Contact(String firstName, String lastName, String address, String city, String state, String zip, String phone, String email) {
+        this.firstName = validateName(firstName, "First Name");
+        this.lastName = validateName(lastName, "Last Name");
+        this.address = validateField(address, "Address", 4);
+        this.city = validateField(city, "City", 4);
+        this.state = validateField(state, "State", 4);
+        this.zip = validateZip(zip);
+        this.phone = validatePhone(phone);
+        this.email = validateEmail(email);
     }
 
-    validateName(name, field) {
-        const nameRegex = /^[A-Z][a-zA-Z]{2,}$/;
-        if (!nameRegex.test(name)) {
-            throw new Error(`${field} must start with a capital letter and have at least 3 characters.`);
+    private String validateName(String name, String field) {
+        if (!name.matches("^[A-Z][a-zA-Z]{2,}$")) {
+            throw new IllegalArgumentException(field + " must start with a capital letter and have at least 3 characters.");
         }
         return name;
     }
 
-    validateAddressField(value, field) {
-        if (value.length < 4) {
-            throw new Error(`${field} must have at least 4 characters.`);
+    private String validateField(String value, String field, int minLength) {
+        if (value.length() < minLength) {
+            throw new IllegalArgumentException(field + " must have at least " + minLength + " characters.");
         }
         return value;
     }
 
-    validateZip(zip) {
-        const zipRegex = /^\d{6}$/;
-        if (!zipRegex.test(zip)) {
-            throw new Error("Zip Code must be exactly 6 digits.");
+    private String validateZip(String zip) {
+        if (!zip.matches("^\\d{6}$")) {
+            throw new IllegalArgumentException("Zip Code must be exactly 6 digits.");
         }
         return zip;
     }
 
-    validatePhone(phone) {
-        const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
-        if (!phoneRegex.test(phone)) {
-            throw new Error("Phone Number must be in format XXX-XXX-XXXX.");
+    private String validatePhone(String phone) {
+        if (!phone.matches("^\\d{3}-\\d{3}-\\d{4}$")) {
+            throw new IllegalArgumentException("Phone Number must be in format XXX-XXX-XXXX.");
         }
         return phone;
     }
 
-    validateEmail(email) {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            throw new Error("Invalid email format.");
+    private String validateEmail(String email) {
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new IllegalArgumentException("Invalid email format.");
         }
         return email;
     }
 
-    display() {
-        return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zip}, ${this.phone}, ${this.email}`;
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s, %s, %s, %s, %s, %s, %s", firstName, lastName, address, city, state, zip, phone, email);
     }
 }
 
 class AddressBook {
-    constructor(name) {
+    private String name;
+    private List<Contact> contacts;
+
+    public AddressBook(String name) {
         this.name = name;
-        this.contacts = [];
+        this.contacts = new ArrayList<>();
     }
 
-    addContact(contact) {
-        const isDuplicate = this.contacts.some(c => c.firstName === contact.firstName && c.lastName === contact.lastName);
-        if (isDuplicate) {
-            console.log(`Duplicate Entry: ${contact.firstName} ${contact.lastName} already exists in ${this.name}.`);
+    public void addContact(Contact contact) {
+        boolean duplicate = contacts.stream().anyMatch(c -> c.getFullName().equals(contact.getFullName()));
+        if (duplicate) {
+            System.out.println("Duplicate Entry: " + contact.getFullName() + " already exists in " + name);
             return;
         }
-
-        this.contacts.push(contact);
-        console.log(`Contact added to ${this.name} successfully!`);
+        contacts.add(contact);
+        System.out.println("Contact added successfully to " + name + "!");
     }
 
-    listContacts() {
-        if (this.contacts.length === 0) {
-            console.log(`No contacts available in ${this.name}.`);
-        } else {
-            console.log(`Contacts in ${this.name}:`);
-            this.contacts.forEach((contact, index) => {
-                console.log(`${index + 1}. ${contact.display()}`);
-            });
+    public void listContacts() {
+        if (contacts.isEmpty()) {
+            System.out.println("No contacts available in " + name + ".");
+            return;
         }
+        System.out.println("\nContacts in " + name + ":");
+        contacts.forEach(contact -> System.out.println(contact));
     }
 
-    // Count persons by City
-    countByCity() {
-        const cityCount = this.contacts.reduce((acc, contact) => {
-            acc[contact.city] = (acc[contact.city] || 0) + 1;
-            return acc;
-        }, {});
-
-        console.log("\nNumber of Contacts by City:");
-        Object.entries(cityCount).forEach(([city, count]) => {
-            console.log(`${city}: ${count}`);
-        });
-    }
-
-    // Count persons by State
-    countByState() {
-        const stateCount = this.contacts.reduce((acc, contact) => {
-            acc[contact.state] = (acc[contact.state] || 0) + 1;
-            return acc;
-        }, {});
-
-        console.log("\nNumber of Contacts by State:");
-        Object.entries(stateCount).forEach(([state, count]) => {
-            console.log(`${state}: ${count}`);
-        });
+    // ✅ **Sorting Contacts Alphabetically by Name**
+    public void sortContactsByName() {
+        contacts = contacts.stream()
+                .sorted(Comparator.comparing(Contact::getFullName))
+                .collect(Collectors.toList());
+        System.out.println("\nContacts Sorted by Name:");
+        listContacts();
     }
 }
 
 class AddressBookManager {
-    constructor() {
-        this.addressBooks = [];
+    private List<AddressBook> addressBooks;
+
+    public AddressBookManager() {
+        this.addressBooks = new ArrayList<>();
     }
 
-    createAddressBook(name) {
-        const newAddressBook = new AddressBook(name);
-        this.addressBooks.push(newAddressBook);
-        console.log(`New Address Book '${name}' created successfully!`);
+    public void createAddressBook(String name) {
+        addressBooks.add(new AddressBook(name));
+        System.out.println("New Address Book '" + name + "' created successfully!");
     }
 
-    getAddressBook(name) {
-        return this.addressBooks.find(book => book.name === name);
+    public AddressBook getAddressBook(String name) {
+        return addressBooks.stream()
+                .filter(book -> book.name.equals(name))
+                .findFirst()
+                .orElse(null);
     }
+}
 
-    listAddressBooks() {
-        if (this.addressBooks.length === 0) {
-            console.log("No Address Books available.");
-        } else {
-            console.log("Available Address Books:");
-            this.addressBooks.forEach((book, index) => {
-                console.log(`${index + 1}. ${book.name}`);
-            });
+public class AddressBookApp {
+    public static void main(String[] args) {
+        AddressBookManager manager = new AddressBookManager();
+        manager.createAddressBook("Friends");
+
+        AddressBook friendsBook = manager.getAddressBook("Friends");
+
+        try {
+            Contact contact1 = new Contact("Alice", "Brown", "123 Park Lane", "New York", "NY", "100001", "123-456-7890", "alice@example.com");
+            Contact contact2 = new Contact("Bob", "Smith", "456 Elm Street", "Los Angeles", "CA", "900002", "987-654-3210", "bob@example.com");
+            Contact contact3 = new Contact("Charlie", "Davis", "789 Sunset Blvd", "New York", "NY", "940001", "555-789-4561", "charlie@example.com");
+            Contact contact4 = new Contact("David", "Evans", "321 Maple Ave", "Chicago", "IL", "600003", "111-222-3333", "david@example.com");
+            Contact contact5 = new Contact("Eve", "Foster", "654 Broadway", "Los Angeles", "CA", "900003", "444-555-6666", "eve@example.com");
+
+            friendsBook.addContact(contact1);
+            friendsBook.addContact(contact2);
+            friendsBook.addContact(contact3);
+            friendsBook.addContact(contact4);
+            friendsBook.addContact(contact5);
+
+            // ✅ **Sort Contacts Alphabetically**
+            friendsBook.sortContactsByName();
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
         }
     }
 }
-
-// Example Usage
-const manager = new AddressBookManager();
-manager.createAddressBook("Friends");
-
-const friendsBook = manager.getAddressBook("Friends");
-
-try {
-    const contact1 = new Contact("Alice", "Brown", "123 Park Lane", "New York", "NY", "100001", "123-456-7890", "alice@example.com");
-    const contact2 = new Contact("Bob", "Smith", "456 Elm Street", "Los Angeles", "CA", "900002", "987-654-3210", "bob@example.com");
-    const contact3 = new Contact("Charlie", "Davis", "789 Sunset Blvd", "New York", "NY", "940001", "555-789-4561", "charlie@example.com");
-    const contact4 = new Contact("David", "Evans", "321 Maple Ave", "Chicago", "IL", "600003", "111-222-3333", "david@example.com");
-    const contact5 = new Contact("Eve", "Foster", "654 Broadway", "Los Angeles", "CA", "900003", "444-555-6666", "eve@example.com");
-
-    friendsBook.addContact(contact1);
-    friendsBook.addContact(contact2);
-    friendsBook.addContact(contact3);
-    friendsBook.addContact(contact4);
-    friendsBook.addContact(contact5);
-
-    // Counting contacts by city
-    friendsBook.countByCity();
-
-    // Counting contacts by state
-    friendsBook.countByState();
-
-} catch (error) {
-    console.error("Error:", error.message);
-}
-
-friendsBook.listContacts();
