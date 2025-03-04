@@ -82,60 +82,38 @@ class AddressBook {
         }
     }
 
-    findContact(firstName, lastName) {
-        return this.contacts.find(contact => contact.firstName === firstName && contact.lastName === lastName);
+    // View persons grouped by City
+    viewByCity() {
+        const cityGroups = this.contacts.reduce((acc, contact) => {
+            if (!acc[contact.city]) {
+                acc[contact.city] = [];
+            }
+            acc[contact.city].push(contact.display());
+            return acc;
+        }, {});
+
+        console.log("\nPersons grouped by City:");
+        Object.entries(cityGroups).forEach(([city, people]) => {
+            console.log(`\nCity: ${city}`);
+            people.forEach(person => console.log(person));
+        });
     }
 
-    editContact(firstName, lastName, updatedDetails) {
-        const contact = this.findContact(firstName, lastName);
-        if (contact) {
-            Object.keys(updatedDetails).forEach(key => {
-                if (contact[key] !== undefined) {
-                    contact[key] = updatedDetails[key];
-                }
-            });
-            console.log(`Contact ${firstName} ${lastName} updated successfully!`);
-        } else {
-            console.log(`Contact ${firstName} ${lastName} not found.`);
-        }
-    }
+    // View persons grouped by State
+    viewByState() {
+        const stateGroups = this.contacts.reduce((acc, contact) => {
+            if (!acc[contact.state]) {
+                acc[contact.state] = [];
+            }
+            acc[contact.state].push(contact.display());
+            return acc;
+        }, {});
 
-    deleteContact(firstName, lastName) {
-        const index = this.contacts.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
-        if (index !== -1) {
-            this.contacts.splice(index, 1);
-            console.log(`Contact ${firstName} ${lastName} deleted successfully!`);
-        } else {
-            console.log(`Contact ${firstName} ${lastName} not found.`);
-        }
-    }
-
-    countContacts() {
-        const count = this.contacts.reduce(acc => acc + 1, 0);
-        console.log(`Total number of contacts in ${this.name}: ${count}`);
-        return count;
-    }
-
-    // Search for persons by city
-    searchByCity(city) {
-        const results = this.contacts.filter(contact => contact.city.toLowerCase() === city.toLowerCase());
-        if (results.length > 0) {
-            console.log(`Contacts in city '${city}':`);
-            results.forEach(contact => console.log(contact.display()));
-        } else {
-            console.log(`No contacts found in city '${city}'.`);
-        }
-    }
-
-    // Search for persons by state
-    searchByState(state) {
-        const results = this.contacts.filter(contact => contact.state.toLowerCase() === state.toLowerCase());
-        if (results.length > 0) {
-            console.log(`Contacts in state '${state}':`);
-            results.forEach(contact => console.log(contact.display()));
-        } else {
-            console.log(`No contacts found in state '${state}'.`);
-        }
+        console.log("\nPersons grouped by State:");
+        Object.entries(stateGroups).forEach(([state, people]) => {
+            console.log(`\nState: ${state}`);
+            people.forEach(person => console.log(person));
+        });
     }
 }
 
@@ -176,14 +154,20 @@ try {
     const contact1 = new Contact("Alice", "Brown", "123 Park Lane", "New York", "NY", "100001", "123-456-7890", "alice@example.com");
     const contact2 = new Contact("Bob", "Smith", "456 Elm Street", "Los Angeles", "CA", "900002", "987-654-3210", "bob@example.com");
     const contact3 = new Contact("Charlie", "Davis", "789 Sunset Blvd", "New York", "NY", "940001", "555-789-4561", "charlie@example.com");
+    const contact4 = new Contact("David", "Evans", "321 Maple Ave", "Chicago", "IL", "600003", "111-222-3333", "david@example.com");
+    const contact5 = new Contact("Eve", "Foster", "654 Broadway", "Los Angeles", "CA", "900003", "444-555-6666", "eve@example.com");
 
     friendsBook.addContact(contact1);
     friendsBook.addContact(contact2);
     friendsBook.addContact(contact3);
+    friendsBook.addContact(contact4);
+    friendsBook.addContact(contact5);
 
-    // Searching contacts
-    friendsBook.searchByCity("New York");
-    friendsBook.searchByState("CA");
+    // Viewing contacts by city
+    friendsBook.viewByCity();
+
+    // Viewing contacts by state
+    friendsBook.viewByState();
 
 } catch (error) {
     console.error("Error:", error.message);
