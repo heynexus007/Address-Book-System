@@ -50,13 +50,15 @@ class Contact {
         return email;
     }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
+    public String getCity() { return city; }
+    public String getState() { return state; }
+    public String getZip() { return zip; }
+    public String getFullName() { return firstName + " " + lastName; }
 
     @Override
     public String toString() {
-        return String.format("%s %s, %s, %s, %s, %s, %s, %s", firstName, lastName, address, city, state, zip, phone, email);
+        return String.format("%s %s, %s, %s, %s, %s, %s, %s",
+                firstName, lastName, address, city, state, zip, phone, email);
     }
 }
 
@@ -85,15 +87,31 @@ class AddressBook {
             return;
         }
         System.out.println("\nContacts in " + name + ":");
-        contacts.forEach(contact -> System.out.println(contact));
+        contacts.forEach(System.out::println);
     }
 
-    // ✅ **Sorting Contacts Alphabetically by Name**
-    public void sortContactsByName() {
+    // ✅ **Sorting Functions**
+    public void sortByCity() {
         contacts = contacts.stream()
-                .sorted(Comparator.comparing(Contact::getFullName))
+                .sorted(Comparator.comparing(Contact::getCity))
                 .collect(Collectors.toList());
-        System.out.println("\nContacts Sorted by Name:");
+        System.out.println("\nContacts Sorted by City:");
+        listContacts();
+    }
+
+    public void sortByState() {
+        contacts = contacts.stream()
+                .sorted(Comparator.comparing(Contact::getState))
+                .collect(Collectors.toList());
+        System.out.println("\nContacts Sorted by State:");
+        listContacts();
+    }
+
+    public void sortByZip() {
+        contacts = contacts.stream()
+                .sorted(Comparator.comparing(Contact::getZip))
+                .collect(Collectors.toList());
+        System.out.println("\nContacts Sorted by Zip:");
         listContacts();
     }
 }
@@ -138,8 +156,10 @@ public class AddressBookApp {
             friendsBook.addContact(contact4);
             friendsBook.addContact(contact5);
 
-            // ✅ **Sort Contacts Alphabetically**
-            friendsBook.sortContactsByName();
+            // ✅ **Sort Contacts by City, State, and Zip**
+            friendsBook.sortByCity();
+            friendsBook.sortByState();
+            friendsBook.sortByZip();
 
         } catch (IllegalArgumentException e) {
             System.err.println("Error: " + e.getMessage());
