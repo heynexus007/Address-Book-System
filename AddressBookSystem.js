@@ -61,6 +61,14 @@ class AddressBook {
     }
 
     addContact(contact) {
+        // Check for duplicate by filtering contacts with the same full name
+        const isDuplicate = this.contacts.some(c => c.firstName === contact.firstName && c.lastName === contact.lastName);
+        
+        if (isDuplicate) {
+            console.log(`Duplicate Entry: ${contact.firstName} ${contact.lastName} already exists in ${this.name}.`);
+            return;
+        }
+
         this.contacts.push(contact);
         console.log(`Contact added to ${this.name} successfully!`);
     }
@@ -104,7 +112,6 @@ class AddressBook {
         }
     }
 
-    // Count contacts using reduce function
     countContacts() {
         const count = this.contacts.reduce(acc => acc + 1, 0);
         console.log(`Total number of contacts in ${this.name}: ${count}`);
@@ -139,26 +146,23 @@ class AddressBookManager {
     }
 }
 
-// Example Usage
+//Usage
 const manager = new AddressBookManager();
 manager.createAddressBook("Friends");
 
 const friendsBook = manager.getAddressBook("Friends");
 
 try {
-    const contact1 = new Contact("Rahul", "Sharma", "123 Park Lane", "Indore", "India", "100001", "123-456-7890", "rahulsharma@example.com");
-    const contact2 = new Contact("Jack", "Smith", "456 Elm Street", "Damoh", "India", "900002", "987-654-3210", "jacksm@example.com");
-    
+    const contact1 = new Contact("Alice", "Brown", "123 Park Lane", "New York", "NY", "100001", "123-456-7890", "alice@example.com");
+    const contact2 = new Contact("Bob", "Smith", "456 Elm Street", "Los Angeles", "CA", "900002", "987-654-3210", "bob@example.com");
+    const contact3 = new Contact("Alice", "Brown", "789 Sunset Blvd", "San Francisco", "CA", "940001", "555-789-4561", "alice.b@example.com");
+
     friendsBook.addContact(contact1);
     friendsBook.addContact(contact2);
+    // This should be rejected as a duplicate
+    friendsBook.addContact(contact3); 
 
     // Counting the contacts
-    friendsBook.countContacts();
-
-    // Deleting a contact
-    friendsBook.deleteContact("Rahul", "Sharma");
-
-    // Counting after deletion
     friendsBook.countContacts();
 
 } catch (error) {
